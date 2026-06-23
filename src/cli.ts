@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
 import { readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -15,10 +15,18 @@ const pkg = JSON.parse(readFileSync(path.join(__dirname, '..', 'package.json'), 
 interface CliOptions {
   json?: boolean;
   out?: string;
-  maxIssues: string;
-  minScore?: string;
+  maxIssues: number;
+  minScore?: number;
   ignore: string[];
-  pxThreshold: string;
+  pxThreshold: number;
+}
+
+function parseNumber(value: string): number {
+  const n = Number(value);
+  if (!Number.isFinite(n)) {
+    throw new InvalidArgumentError(`"${value}" is not a number.`);
+  }
+  return n;
 }
 
 const program = new Command();
@@ -32,19 +40,19 @@ program
   .argument('[target]', 'path to the component library / design system to audit', '.')
   .option('-j, --json', 'output the report as JSON')
   .option('-o, --out <file>', 'write the report to a file instead of stdout')
-  .option('--max-issues <n>', 'max issues to display per pillar', '10')
-  .option('--min-score <n>', 'exit with a non-zero status if the overall score is below this threshold')
+  .option('--max-issues <n>', 'max issues to display per pillar', parseNumber, 10)
+  .option('--min-score <n>', 'exit with a non-zero status if the overall score is below this threshold', parseNumber)
   .option('--ignore <glob>', 'additional ignore glob pattern (repeatable)', collectIgnore, [] as string[])
-  .option('--px-threshold <n>', 'ignore hardcoded px values at or below this magnitude', '1')
+  .option('--px-threshold <n>', 'ignore hardcoded px values at or below this magnitude', parseNumber, 1)
   .action(async (target: string, opts: CliOptions) => {
     const report = await runAudit(target, {
       ignore: opts.ignore,
-      pxThreshold: Number(opts.pxThreshold),
+      pxThreshold: opts.pxThreshold,
     });
 
     const output = opts.json
       ? formatJsonReport(report)
-      : formatConsoleReport(report, { maxIssues: Number(opts.maxIssues) });
+      : formatConsoleReport(report, { maxIssues: opts.maxIssues });
 
     if (opts.out) {
       await writeFile(opts.out, output, 'utf8');
@@ -54,7 +62,7 @@ program
     }
 
     if (opts.minScore !== undefined) {
-      const threshold = Number(opts.minScore);
+      const threshold = opts.minScore;
       if (report.overallScore === null || report.overallScore < threshold) {
         console.error(
           chalk.red(`\nOverall score ${report.overallScore ?? 'N/A'} is below the minimum threshold of ${threshold}.`)
@@ -68,4 +76,8 @@ function collectIgnore(value: string, previous: string[]): string[] {
   return [...previous, value];
 }
 
-void program.parseAsync(process.argv);
+program.parseAsync(process.argv).catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(chalk.red(`\ncomponent-debt failed: ${message}`));
+  process.exitCode = 1;
+});

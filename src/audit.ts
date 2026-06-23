@@ -1,3 +1,4 @@
+import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import { auditAccessibility } from './pillars/accessibility.js';
 import { auditComponentApi } from './pillars/componentApi.js';
@@ -22,6 +23,17 @@ export interface RunAuditOptions {
 
 export async function runAudit(targetDir: string, options: RunAuditOptions = {}): Promise<AuditReport> {
   const resolvedTarget = path.resolve(targetDir);
+
+  let targetStats;
+  try {
+    targetStats = await stat(resolvedTarget);
+  } catch {
+    throw new Error(`Target path does not exist: ${resolvedTarget}`);
+  }
+  if (!targetStats.isDirectory()) {
+    throw new Error(`Target path is not a directory: ${resolvedTarget}`);
+  }
+
   const files = await scanFiles(resolvedTarget, { ignore: options.ignore });
   const tokenDefinitionFiles = await findFiles(resolvedTarget, TOKEN_DEFINITION_PATTERNS, options.ignore);
 

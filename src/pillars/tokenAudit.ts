@@ -1,7 +1,10 @@
 import type { Finding, PillarResult, ScannedFile, Severity } from '../types.js';
 
 const HEX_COLOR_RE = /#(?:[0-9a-fA-F]{3,4}){1,2}\b/g;
-const FUNCTIONAL_COLOR_RE = /\b(?:rgb|rgba|hsl|hsla)\(\s*\d/g;
+// Requires a literal digit as the first argument so tokenized colors like
+// rgb(var(--accent)) are not flagged, but captures through the closing paren
+// so the finding shows the whole expression instead of a truncated "rgb(2".
+const FUNCTIONAL_COLOR_RE = /\b(?:rgb|rgba|hsl|hsla)\(\s*\d[^)]*\)/g;
 const CUSTOM_PROPERTY_USAGE_RE = /var\(\s*--[\w-]+/g;
 const CUSTOM_PROPERTY_DEFINITION_LINE_RE = /^\s*--[\w-]+\s*:/;
 const PX_VALUE_RE = /(-?\d+(?:\.\d+)?)px/g;
@@ -17,8 +20,10 @@ const SPACING_PROPERTIES = [
 
 const LOW_SEVERITY_PROPERTIES = new Set(['border-radius', 'letter-spacing']);
 
+// The leading (?<![\w-]) keeps "margin" from matching inside "scroll-margin",
+// so findings report the real property name (scroll-margin, not margin).
 const SPACING_PROPERTY_RE = new RegExp(
-  `(?<prop>${SPACING_PROPERTIES.join('|')})\\s*:\\s*(?<value>[^;]+);?`,
+  `(?<![\\w-])(?<prop>${SPACING_PROPERTIES.join('|')})\\s*:\\s*(?<value>[^;]+);?`,
   'gi'
 );
 

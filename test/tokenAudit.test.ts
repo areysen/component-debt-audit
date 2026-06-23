@@ -31,6 +31,32 @@ describe('auditTokens', () => {
     expect(spacing[0].value).toBe('16px');
   });
 
+  it('reports the full functional color expression, not a truncated prefix', () => {
+    const result = auditTokens([file('a.css', '.a {\n  color: rgb(255, 0, 0);\n}\n')]);
+    const color = result.findings.find((f) => f.ruleId === 'hardcoded-color');
+    expect(color?.value).toBe('rgb(255, 0, 0)');
+    expect(color?.message).toContain('rgb(255, 0, 0)');
+  });
+
+  it('does not flag functional colors routed through a token', () => {
+    const result = auditTokens([file('a.css', '.a {\n  color: rgb(var(--accent-rgb));\n}\n')]);
+    expect(result.findings.filter((f) => f.ruleId === 'hardcoded-color')).toHaveLength(0);
+  });
+
+  it('does not mislabel scroll-margin as the margin property', () => {
+    const result = auditTokens([file('a.css', '.a {\n  scroll-margin: 24px;\n}\n')]);
+    const mislabeled = result.findings.find(
+      (f) => f.ruleId === 'hardcoded-spacing' && f.message.includes('"margin"')
+    );
+    expect(mislabeled).toBeUndefined();
+  });
+
+  it('still flags a genuine margin property', () => {
+    const result = auditTokens([file('a.css', '.a {\n  margin: 24px;\n}\n')]);
+    const spacing = result.findings.find((f) => f.ruleId === 'hardcoded-spacing');
+    expect(spacing?.message).toContain('"margin"');
+  });
+
   it('does not flag px values that reference var()', () => {
     const result = auditTokens([file('card.css', '.card {\n  padding: var(--space-md);\n}\n')]);
     expect(result.findings).toHaveLength(0);

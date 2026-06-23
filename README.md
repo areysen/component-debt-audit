@@ -23,6 +23,8 @@ This is v0.1. Token architecture auditing works end-to-end today. The other thre
 
 ## Install
 
+Requires Node 20 or newer.
+
 Run it directly with npx, no install step:
 
 ```bash

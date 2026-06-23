@@ -25,7 +25,7 @@
     "design-debt"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "bin": {
     "component-debt": "./dist/cli.js"
@@ -46,7 +46,7 @@
     "start": "node dist/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "tsc --noEmit",
+    "lint": "tsc -p tsconfig.lint.json",
     "prepare": "npm run build"
   },
   "dependencies": {
