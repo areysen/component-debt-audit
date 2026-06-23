@@ -143,7 +143,7 @@ function colorFinding(file: string, line: number, value: string): Finding {
     ruleId: 'hardcoded-color',
     severity: 'high',
     value,
-    message: `Hardcoded color "${value}" — consider referencing a design token instead.`,
+    message: `Hardcoded color "${value}": consider referencing a design token instead.`,
     suggestion: 'Replace with var(--color-*) or your token equivalent.',
   };
 }
@@ -156,7 +156,7 @@ function spacingFinding(file: string, line: number, prop: string, value: string)
     ruleId: 'hardcoded-spacing',
     severity,
     value,
-    message: `Hardcoded value "${value}" for "${prop}" — consider a spacing/sizing token.`,
+    message: `Hardcoded value "${value}" for "${prop}": consider a spacing/sizing token.`,
     suggestion: 'Replace with var(--space-*) or your token equivalent.',
   };
 }

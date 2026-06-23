@@ -32,7 +32,7 @@ export function formatConsoleReport(report: AuditReport, options: ConsoleFormatO
   for (const pillar of report.pillars) {
     if (!pillar.implemented) continue;
     lines.push('');
-    lines.push(chalk.bold.underline(`${pillar.name.toUpperCase()} — DETAILS`));
+    lines.push(chalk.bold.underline(`${pillar.name.toUpperCase()} DETAILS`));
 
     if (pillar.score === null) {
       lines.push(chalk.dim((pillar.notes ?? []).join(' ')));
@@ -59,10 +59,10 @@ export function formatConsoleReport(report: AuditReport, options: ConsoleFormatO
 function formatPillarScoreLine(pillar: PillarResult): string {
   const label = pillar.name.padEnd(28);
   if (!pillar.implemented) {
-    return `  ${label} ${chalk.dim('—       Coming soon')}`;
+    return `  ${label} ${chalk.dim('n/a     Coming soon')}`;
   }
   if (pillar.score === null) {
-    return `  ${label} ${chalk.dim('—       No data')}`;
+    return `  ${label} ${chalk.dim('n/a     No data')}`;
   }
   return `  ${label} ${scoreColor(pillar.score)(`${String(pillar.score).padStart(3)}/100`)}  ${renderBar(pillar.score)}`;
 }

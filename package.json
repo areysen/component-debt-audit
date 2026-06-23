@@ -1,7 +1,7 @@
 {
   "name": "component-debt",
   "version": "0.1.0",
-  "description": "Audit a design system's components across four pillars — token architecture, API consistency, accessibility, and documentation — and get a scored health report.",
+  "description": "Audit a design system's components across four pillars (token architecture, API consistency, accessibility, and documentation) and get a scored health report.",
   "type": "module",
   "license": "MIT",
   "author": "Andrew Reysen",
@@ -58,6 +58,6 @@
     "@types/node": "^20.14.0",
     "tsx": "^4.16.2",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5"
+    "vitest": "^4.1.9"
   }
 }
