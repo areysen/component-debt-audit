@@ -1,0 +1,18 @@
+:root {
+  --color-primary: #3366ff;
+  --space-md: 16px;
+}
+
+.button {
+  background-color: #3366ff;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.button--token {
+  background-color: var(--color-primary);
+  padding: var(--space-md);
+}

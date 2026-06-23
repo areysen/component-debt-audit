@@ -1,0 +1,63 @@
+{
+  "name": "component-debt",
+  "version": "0.1.0",
+  "description": "Audit a design system's components across four pillars — token architecture, API consistency, accessibility, and documentation — and get a scored health report.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Andrew Reysen",
+  "homepage": "https://github.com/areysen/component-debt-audit#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/areysen/component-debt-audit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/areysen/component-debt-audit/issues"
+  },
+  "keywords": [
+    "design-systems",
+    "design-tokens",
+    "accessibility",
+    "component-library",
+    "audit",
+    "cli",
+    "storybook",
+    "wcag",
+    "design-debt"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "component-debt": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/chmod-bin.mjs",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fast-glob": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}
